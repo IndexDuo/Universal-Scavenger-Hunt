@@ -1,15 +1,18 @@
 import React, { useState, useRef } from "react";
 import {
     View,
-    Button,
     StyleSheet,
     Text,
     TouchableOpacity,
     Image,
+    Dimensions,
 } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import * as FileSystem from 'expo-file-system';
+
+const screenWidth = Dimensions.get("window").width;
 
 function CameraScreen() {
     const cameraRef = useRef(null);
@@ -17,7 +20,7 @@ function CameraScreen() {
     const [permission, requestPermission] = useCameraPermissions();
     const [photoUri, setPhotoUri] = useState(null);
     const [isCameraReady, setIsCameraReady] = useState(false);
-    const [showPreview, setShowPreview] = useState(false); // Toggle between preview and camera
+    const [showPreview, setShowPreview] = useState(false);
     const navigation = useNavigation();
     const route = useRoute();
     const { huntTitle } = route.params || {}; // Receive hunt title for identification
@@ -50,7 +53,7 @@ function CameraScreen() {
             try {
                 const photo = await cameraRef.current.takePictureAsync();
                 setPhotoUri(photo.uri);
-                setShowPreview(true); // Show the preview once the photo is taken
+                setShowPreview(true);
             } catch (error) {
                 console.error("Error taking photo:", error);
             }
@@ -59,7 +62,7 @@ function CameraScreen() {
 
     function retakePhoto() {
         setPhotoUri(null);
-        setShowPreview(false); // Return to camera view
+        setShowPreview(false);
     }
 
     async function savePhoto() {
@@ -93,6 +96,14 @@ function CameraScreen() {
 
     return (
         <View style={styles.container}>
+            {/* Custom Back Button */}
+            <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => navigation.goBack()}
+            >
+                <Ionicons name="arrow-back" size={24} color="#0368D9" />
+            </TouchableOpacity>
+
             {!showPreview ? (
                 <CameraView
                     style={styles.camera}
@@ -100,18 +111,27 @@ function CameraScreen() {
                     ref={cameraRef}
                     onCameraReady={() => setIsCameraReady(true)}
                 >
-                    <View style={styles.buttonContainer}>
+                    {/* Camera Control Buttons */}
+                    <View style={styles.controlContainer}>
                         <TouchableOpacity
-                            style={styles.button}
+                            style={styles.iconButton}
                             onPress={toggleCameraType}
                         >
-                            <Text style={styles.text}>Flip Camera</Text>
+                            <MaterialCommunityIcons
+                                name="camera-flip"
+                                size={40}
+                                color="#ffffff"
+                            />
                         </TouchableOpacity>
                         <TouchableOpacity
-                            style={styles.button}
+                            style={styles.shutterButton}
                             onPress={takePhoto}
                         >
-                            <Text style={styles.text}>Take Photo</Text>
+                            <MaterialCommunityIcons
+                                name="camera-iris"
+                                size={70}
+                                color="#ffffff"
+                            />
                         </TouchableOpacity>
                     </View>
                 </CameraView>
@@ -123,8 +143,18 @@ function CameraScreen() {
                         style={styles.previewImage}
                     />
                     <View style={styles.previewButtonContainer}>
-                        <Button title="Take Again" onPress={retakePhoto} />
-                        <Button title="Save Photo" onPress={savePhoto} />
+                        <TouchableOpacity
+                            style={[styles.actionButton, styles.retakeButton]}
+                            onPress={retakePhoto}
+                        >
+                            <Text style={styles.buttonText}>Take Again</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[styles.actionButton, styles.saveButton]}
+                            onPress={savePhoto}
+                        >
+                            <Text style={styles.buttonText}>Save Photo</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
             )}
@@ -142,23 +172,39 @@ const styles = StyleSheet.create({
         flex: 1,
         aspectRatio: 3 / 4,
     },
-    buttonContainer: {
+    backButton: {
         position: "absolute",
-        bottom: 20,
-        width: "100%",
-        flexDirection: "row",
-        justifyContent: "space-evenly",
+        top: 40,
+        left: 20,
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: "#ffffff",
+        justifyContent: "center",
         alignItems: "center",
+        zIndex: 10,
     },
-    button: {
-        backgroundColor: "white",
+    controlContainer: {
+        position: "absolute",
+        bottom: 70,
+        width: "45%",
+        flexDirection: "row",
+        justifyContent: "space-between", // Center the buttons evenly
+        alignItems: "center",
+        paddingHorizontal: 50, // Adjust the padding to position correctly
+    },
+    iconButton: {
+        backgroundColor: "rgba(0, 0, 0, 0.4)",
+        borderRadius: 30,
         padding: 10,
-        borderRadius: 5,
     },
-    text: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: "black",
+    shutterButton: {
+        width: 70,
+        height: 70,
+        borderRadius: 35, // Circular shape for the shutter button
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(255, 255, 255, 0.3)", // Slightly transparent background
     },
     previewContainer: {
         flex: 1,
@@ -180,6 +226,22 @@ const styles = StyleSheet.create({
         justifyContent: "space-around",
         width: "80%",
         marginTop: 20,
+    },
+    actionButton: {
+        paddingHorizontal: 20,
+        paddingVertical: 12,
+        borderRadius: 10,
+    },
+    retakeButton: {
+        backgroundColor: "#ff4d4d",
+    },
+    saveButton: {
+        backgroundColor: "#4CAF50",
+    },
+    buttonText: {
+        color: "#ffffff",
+        fontSize: 16,
+        fontWeight: "bold",
     },
 });
 

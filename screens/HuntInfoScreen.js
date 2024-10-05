@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import {
+    View,
+    Text,
+    Image,
+    TouchableOpacity,
+    StyleSheet,
+    Dimensions,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
-import huntsData from "../data/huntsData.json";
-import imagePaths from "../data/imagePaths";
 
 function HuntInfoScreen({ route, navigation }) {
     const { huntTitle, photoUri: newPhotoUri } = route.params || {};
     const [photoUri, setPhotoUri] = useState(null);
 
-    // Load photo from AsyncStorage when the component mounts or new photo is taken
     useEffect(() => {
         async function loadPhoto() {
             const storedPhotoUri = await AsyncStorage.getItem(
@@ -22,11 +26,10 @@ function HuntInfoScreen({ route, navigation }) {
         loadPhoto();
     }, []);
 
-    // Update photoUri if a new photo is taken
     useEffect(() => {
         if (newPhotoUri) {
             setPhotoUri(newPhotoUri);
-            savePhoto(newPhotoUri); // Save the new photo to AsyncStorage
+            savePhoto(newPhotoUri);
         }
     }, [newPhotoUri]);
 
@@ -39,7 +42,17 @@ function HuntInfoScreen({ route, navigation }) {
 
     return (
         <View style={styles.container}>
-            {/* Display the saved photo or a placeholder box */}
+            {/* Custom Header */}
+            <View style={styles.customHeader}>
+                <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={() => navigation.goBack()}
+                >
+                    <Ionicons name="arrow-back" size={24} color="#0368D9" />
+                </TouchableOpacity>
+            </View>
+
+            {/* Photo Display */}
             {photoUri ? (
                 <Image source={{ uri: photoUri }} style={styles.photo} />
             ) : (
@@ -58,7 +71,8 @@ function HuntInfoScreen({ route, navigation }) {
             {/* Hunt title and description */}
             <Text style={styles.title}>{huntTitle}</Text>
             <Text style={styles.description}>
-                {hunt ? hunt.description : ""}
+                Take a photo to complete this scavenger hunt and save your
+                memory!
             </Text>
 
             {/* Floating Action Button (FAB) for taking a new photo */}
@@ -78,37 +92,43 @@ function HuntInfoScreen({ route, navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "flex-start",
+        backgroundColor: "#ffffff", // Updated to white background
+    },
+    customHeader: {
+        position: "absolute",
+        top: 50,
+        left: 20,
+        zIndex: 10,
+    },
+    backButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: "#ffffff",
+        justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#f5f5f5",
-        padding: 16,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginVertical: 10,
-        textAlign: "center",
-    },
-    description: {
-        fontSize: 16,
-        textAlign: "center",
-        marginVertical: 10,
-        color: "#666",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 5,
     },
     photo: {
-        width: 350,
-        height: 350,
-        borderRadius: 10,
-        marginTop: 20,
-        marginBottom: 20,
+        width: screenWidth,
+        height: screenHeight * 0.4, // 40% of the screen height
+        marginTop: 0,
+        marginLeft: 0,
+        marginRight: 0,
+        borderRadius: 0, // No border radius for the top image
     },
     placeholder: {
-        width: 350,
-        height: 350,
-        borderRadius: 10,
-        marginTop: 20,
-        marginBottom: 20,
-        backgroundColor: "#e0e0e0", // Grey background color for the placeholder
+        width: screenWidth,
+        height: screenHeight * 0.4,
+        marginTop: 0,
+        marginLeft: 0,
+        marginRight: 0,
+        borderRadius: 0,
+        backgroundColor: "#e0e0e0",
         justifyContent: "center",
         alignItems: "center",
     },
@@ -116,12 +136,29 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: "#888",
     },
+    textContainer: {
+        paddingHorizontal: 20, // Padding for the text content below the image
+        marginTop: 20, // Space between the image and text container
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: "bold",
+        marginBottom: 10,
+        textAlign: "left", // Left-aligned text
+    },
+    description: {
+        fontSize: 16,
+        textAlign: "left", // Left-aligned text
+        marginBottom: 20,
+        color: "#666",
+    },
     fab: {
         position: "absolute",
         bottom: 30,
+        left: screenWidth / 2 - 75, // Centered button (adjust width / 2 - button width / 2)
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#6200ea",
+        backgroundColor: "#0368D9", // Universal Blue for the button
         paddingHorizontal: 20,
         paddingVertical: 12,
         borderRadius: 30,
