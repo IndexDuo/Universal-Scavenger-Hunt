@@ -4,8 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 
 function HuntInfoScreen({ route, navigation }) {
-    const { huntTitle, huntDescription } = route.params;
-    const [showCamera, setShowCamera] = useState(false);
+    const { huntTitle, photoUri: newPhotoUri } = route.params || {};
     const [photoUri, setPhotoUri] = useState(null);
 
     // Load photo from AsyncStorage when the component mounts or new photo is taken
@@ -23,11 +22,11 @@ function HuntInfoScreen({ route, navigation }) {
 
     // Update photoUri if a new photo is taken
     useEffect(() => {
-        if (photoUri) {
-            setPhotoUri(photoUri);
-            savePhoto(photoUri); // Save the new photo to AsyncStorage
+        if (newPhotoUri) {
+            setPhotoUri(newPhotoUri);
+            savePhoto(newPhotoUri); // Save the new photo to AsyncStorage
         }
-    }, [photoUri]);
+    }, [newPhotoUri]);
 
     async function savePhoto(uri) {
         await AsyncStorage.setItem(`${huntTitle}-photo`, uri);
@@ -48,8 +47,7 @@ function HuntInfoScreen({ route, navigation }) {
 
             {/* Hunt title and description */}
             <Text style={styles.title}>{huntTitle}</Text>
-            <Text style={styles.description}>{huntDescription}</Text>
-            <Text style={styles.instruction}>
+            <Text style={styles.description}>
                 Take a photo to complete this scavenger hunt and save your
                 memory!
             </Text>
@@ -87,11 +85,6 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginVertical: 10,
         color: "#666",
-    },
-    instruction: {
-        fontSize: 16,
-        textAlign: "center",
-        marginBottom: 20,
     },
     photo: {
         width: 350,
