@@ -7,12 +7,7 @@ import {
     StyleSheet,
     TouchableOpacity,
 } from "react-native";
-
-const DATA = [
-    { id: "1", title: "Hunt #1: Find the Entrance Sign" },
-    { id: "2", title: "Hunt #2: Ride the Jurassic Park Ride" },
-    { id: "3", title: "Hunt #3: Take a Picture with a Mascot" },
-];
+import HUNT_DATA from "../components/HuntList"; // Import the hunt data
 
 function ListScreen({ navigation }) {
     // Function to render each hunt item
@@ -21,7 +16,7 @@ function ListScreen({ navigation }) {
             <TouchableOpacity
                 style={styles.huntItem}
                 onPress={() =>
-                    navigation.navigate("HuntInfo", { huntTitle: item.title })
+                    navigation.navigate("HuntInfo", { huntTitle: item.title, huntDescription: item.description })
                 }
             >
                 <Text style={styles.huntTitle}>{item.title}</Text>
@@ -33,7 +28,7 @@ function ListScreen({ navigation }) {
         <View style={styles.container}>
             <Text style={styles.title}>Scavenger Hunts</Text>
             <FlatList
-                data={DATA}
+                data={HUNT_DATA} // Use the imported hunt data
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
             />

@@ -12,7 +12,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import CameraComponent from "../components/CameraComponent";
 
 function HuntInfoScreen({ route, navigation }) {
-    const { huntTitle } = route.params;
+    const { huntTitle, huntDescription } = route.params;
     const [showCamera, setShowCamera] = useState(false);
     const [photoUri, setPhotoUri] = useState(null);
 
@@ -41,7 +41,8 @@ function HuntInfoScreen({ route, navigation }) {
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.title}>{huntTitle}</Text>
-            <Text style={styles.description}>
+            <Text style={styles.description}>{huntDescription}</Text>
+            <Text style={styles.instruction}>
                 Take a photo to complete this scavenger hunt and save your
                 memory!
             </Text>
@@ -86,6 +87,11 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     description: {
+        fontSize: 16,
+        textAlign: "center",
+        marginBottom: 20,
+    },
+    instruction: {
         fontSize: 16,
         textAlign: "center",
         marginBottom: 20,

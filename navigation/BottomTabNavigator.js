@@ -13,11 +13,11 @@ function BottomTabNavigator() {
         <NavigationContainer>
             <Tab.Navigator initialRouteName="ScavengerHuntList">
                 <Tab.Screen
-                    name="ScavengerHuntList"
+                    name="Scavenger Hunt List"
                     component={StackNavigator}
                     options={{ headerShown: false }}
                 />
-                <Tab.Screen name="Souvenirs" component={SouvenirScreen} />
+                <Tab.Screen name="Your Souvenirs" component={SouvenirScreen} />
             </Tab.Navigator>
         </NavigationContainer>
     );
