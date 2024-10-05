@@ -1,22 +1,21 @@
-// App.js (or CameraComponent.js if you prefer)
-import React, { useState } from "react";
+import { CameraView, useCameraPermissions } from "expo-camera";
+import React, { useState, useRef } from "react";
 import {
-    View,
-    Text,
     Button,
     StyleSheet,
+    Text,
     TouchableOpacity,
+    View,
     Image,
 } from "react-native";
-import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
 
 export default function App() {
-    const [cameraType, setCameraType] = useState(CameraType?.Back || "back"); // Use the new CameraType enum
-    const [permission, requestPermission] = useCameraPermissions(); // Permissions hook for camera
-    const [photoUri, setPhotoUri] = useState(null); // Store the URI of the captured photo
-    const [isCameraReady, setIsCameraReady] = useState(false); // State to handle camera readiness
+    const cameraRef = useRef(null);
+    const [facing, setFacing] = useState("back"); // Default camera type is set to "back"
+    const [permission, requestPermission] = useCameraPermissions(); // Handle camera permissions
+    const [photoUri, setPhotoUri] = useState(null); // Store the captured photo URI
+    const [isCameraReady, setIsCameraReady] = useState(false); // Track if the camera is ready
 
-    // Check if permissions are still loading
     if (!permission) {
         return (
             <View style={styles.container}>
@@ -25,11 +24,10 @@ export default function App() {
         );
     }
 
-    // Check if permissions are granted
     if (!permission.granted) {
         return (
             <View style={styles.container}>
-                <Text style={styles.message}>
+                <Text style={{ textAlign: "center" }}>
                     We need your permission to show the camera
                 </Text>
                 <Button onPress={requestPermission} title="Grant Permission" />
@@ -39,19 +37,16 @@ export default function App() {
 
     // Function to toggle between front and back camera
     function toggleCameraType() {
-        setCameraType((current) =>
-            current === CameraType.Back ? CameraType.Front : CameraType.Back
-        );
+        setFacing((current) => (current === "back" ? "front" : "back"));
     }
 
-    // Function to capture the photo
+    // Capture a photo and store its URI
     async function takePhoto() {
-        if (isCameraReady) {
+        if (cameraRef.current && isCameraReady) {
             try {
-                // Capture a photo using the CameraView API (simulating capture)
-                const photo = await CameraView.captureAsync();
-                setPhotoUri(photo.uri);
-                console.log("Photo URI:", photo.uri);
+                const photo = await cameraRef.current.takePictureAsync();
+                setPhotoUri(photo.uri); // Store the captured photo URI
+                console.log("Captured Photo URI:", photo.uri);
             } catch (error) {
                 console.error("Error taking photo:", error);
             }
@@ -63,9 +58,11 @@ export default function App() {
             {/* Camera View */}
             <CameraView
                 style={styles.camera}
-                type={cameraType}
+                facing={facing}
+                ref={cameraRef}
                 onCameraReady={() => setIsCameraReady(true)} // Mark the camera as ready
             >
+                {/* Control Buttons Inside the Camera View */}
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
                         style={styles.button}
