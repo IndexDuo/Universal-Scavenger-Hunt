@@ -28,8 +28,8 @@
     },
     {
         "id": "4",
-        "title": "placeholder",
-        "description": "placeholder",
+        "title": "Gringotts Dragon",
+        "description": "Take a photo of the dragon on the top of Gringotts Bank, while it breathes fire.",
         "photoUri": "",
         "hintPhotoUri": "",
         "geolocation": {},
@@ -37,8 +37,53 @@
     },
     {
         "id": "5",
-        "title": "placeholder",
-        "description": "placeholder",
+        "title": "Norweigan Flag spotting",
+        "description": "There's a flag of Norway somewhere in the park. Find it and take a photo.",
+        "photoUri": "",
+        "hintPhotoUri": "",
+        "geolocation": {},
+        "completed": false
+    },
+    {
+        "id": "6",
+        "title": "Palace Theater Arcade",
+        "description": "Win a prize from the claw machine at the Palace Theater Arcade and take a photo of it.",
+        "photoUri": "",
+        "hintPhotoUri": "",
+        "geolocation": {},
+        "completed": false
+    },
+    {
+        "id": "7",
+        "title": "Transformers - Press the Button",
+        "description": "While waiting in line for the Transformers ride, there's a button on one of the walls. Press it and take a photo of what the lights do.",
+        "photoUri": "",
+        "hintPhotoUri": "",
+        "geolocation": {},
+        "completed": false
+    },
+    {
+        "id": "8",
+        "title": "Stop The Ride!!",
+        "description": "In Krustyland, clips from episodes of The Simpsons are shown on TVs. Take a photo of the clip where Bart has a rough experience on a roller coaster.",
+        "photoUri": "",
+        "hintPhotoUri": "",
+        "geolocation": {},
+        "completed": false
+    },
+    {
+        "id": "9",
+        "title": "Banana Trees",
+        "description": "It's no secret that the Minions love bananas. There's actually banana trees planted in the park because of them. Find them and take a photo.",
+        "photoUri": "",
+        "hintPhotoUri": "",
+        "geolocation": {},
+        "completed": false
+    },
+    {
+        "id": "10",
+        "title": "See the Animals",
+        "description": "Go see the animals at the Animal Actors on Location show and take a photo of your favorite one. It's worth seeing.",
         "photoUri": "",
         "hintPhotoUri": "",
         "geolocation": {},
