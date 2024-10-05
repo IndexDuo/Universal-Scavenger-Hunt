@@ -1,1 +1,1 @@
-# Universal-Scavenger-Hunt
+# Universal Scavenger Hunt (Daniel's Branch)
