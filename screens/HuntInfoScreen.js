@@ -1,22 +1,13 @@
-// screens/HuntInfoScreen.js
 import React, { useState, useEffect } from "react";
-import {
-    View,
-    Text,
-    Image,
-    Button,
-    StyleSheet,
-    ScrollView,
-} from "react-native";
+import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import CameraComponent from "../components/CameraComponent";
+import { Ionicons } from "@expo/vector-icons";
 
 function HuntInfoScreen({ route, navigation }) {
-    const { huntTitle } = route.params;
-    const [showCamera, setShowCamera] = useState(false);
+    const { huntTitle, photoUri: newPhotoUri } = route.params || {};
     const [photoUri, setPhotoUri] = useState(null);
 
-    // Load photo from AsyncStorage
+    // Load photo from AsyncStorage when the component mounts or new photo is taken
     useEffect(() => {
         async function loadPhoto() {
             const storedPhotoUri = await AsyncStorage.getItem(
@@ -29,71 +20,113 @@ function HuntInfoScreen({ route, navigation }) {
         loadPhoto();
     }, []);
 
-    // Handle photo saving
-    async function handlePhotoTaken(uri) {
-        setPhotoUri(uri);
-        setShowCamera(false);
+    // Update photoUri if a new photo is taken
+    useEffect(() => {
+        if (newPhotoUri) {
+            setPhotoUri(newPhotoUri);
+            savePhoto(newPhotoUri); // Save the new photo to AsyncStorage
+        }
+    }, [newPhotoUri]);
 
-        // Save photo URI to AsyncStorage
+    async function savePhoto(uri) {
         await AsyncStorage.setItem(`${huntTitle}-photo`, uri);
     }
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.container}>
+            {/* Display the saved photo or a placeholder box */}
+            {photoUri ? (
+                <Image source={{ uri: photoUri }} style={styles.photo} />
+            ) : (
+                <View style={styles.placeholder}>
+                    <Text style={styles.placeholderText}>
+                        No photo taken yet
+                    </Text>
+                </View>
+            )}
+
+            {/* Hunt title and description */}
             <Text style={styles.title}>{huntTitle}</Text>
             <Text style={styles.description}>
                 Take a photo to complete this scavenger hunt and save your
                 memory!
             </Text>
 
-            {/* Display the camera component or the saved photo */}
-            {showCamera ? (
-                <CameraComponent onPhotoTaken={handlePhotoTaken} />
-            ) : (
-                <View>
-                    {photoUri ? (
-                        <Image
-                            source={{ uri: photoUri }}
-                            style={styles.photo}
-                        />
-                    ) : (
-                        <Text>No photo taken yet.</Text>
-                    )}
-
-                    {/* Show buttons for taking or retaking a photo */}
-                    <Button
-                        title="Take Photo"
-                        onPress={() => setShowCamera(true)}
-                    />
-                </View>
-            )}
-
-            <Button title="Back to List" onPress={() => navigation.goBack()} />
-        </ScrollView>
+            {/* Floating Action Button (FAB) for taking a new photo */}
+            <TouchableOpacity
+                style={styles.fab}
+                onPress={() =>
+                    navigation.navigate("CameraScreen", { huntTitle })
+                }
+            >
+                <Ionicons name="camera" size={30} color="white" />
+                <Text style={styles.fabText}>Take Photo</Text>
+            </TouchableOpacity>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flexGrow: 1,
-        justifyContent: "center",
+        flex: 1,
+        justifyContent: "flex-start",
         alignItems: "center",
+        backgroundColor: "#f5f5f5",
         padding: 16,
     },
     title: {
         fontSize: 24,
         fontWeight: "bold",
-        marginBottom: 16,
+        marginVertical: 10,
+        textAlign: "center",
     },
     description: {
         fontSize: 16,
         textAlign: "center",
-        marginBottom: 20,
+        marginVertical: 10,
+        color: "#666",
     },
     photo: {
-        width: 300,
-        height: 300,
+        width: 350,
+        height: 350,
+        borderRadius: 10,
+        marginTop: 20,
         marginBottom: 20,
+    },
+    placeholder: {
+        width: 350,
+        height: 350,
+        borderRadius: 10,
+        marginTop: 20,
+        marginBottom: 20,
+        backgroundColor: "#e0e0e0", // Grey background color for the placeholder
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    placeholderText: {
+        fontSize: 18,
+        color: "#888",
+    },
+    fab: {
+        position: "absolute",
+        bottom: 30,
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "#6200ea",
+        paddingHorizontal: 20,
+        paddingVertical: 12,
+        borderRadius: 30,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    fabText: {
+        marginLeft: 10,
+        fontSize: 18,
+        color: "white",
+        fontWeight: "bold",
     },
 });
 
