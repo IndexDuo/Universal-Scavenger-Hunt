@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
+import HUNT_DATA from "../components/HuntList";
 
 function HuntInfoScreen({ route, navigation }) {
     const { huntTitle, photoUri: newPhotoUri } = route.params || {};
@@ -48,8 +49,7 @@ function HuntInfoScreen({ route, navigation }) {
             {/* Hunt title and description */}
             <Text style={styles.title}>{huntTitle}</Text>
             <Text style={styles.description}>
-                Take a photo to complete this scavenger hunt and save your
-                memory!
+                {HUNT_DATA.find((hunt) => hunt.title === huntTitle).description}
             </Text>
 
             {/* Floating Action Button (FAB) for taking a new photo */}
