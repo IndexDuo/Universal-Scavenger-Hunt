@@ -3,39 +3,35 @@ import React from "react";
 import {
     View,
     Text,
-    StyleSheet,
     FlatList,
+    StyleSheet,
     TouchableOpacity,
 } from "react-native";
 
 const DATA = [
-    { id: "1", title: "Tutorial - How to Use This App", isTutorial: true },
-    { id: "2", title: "Hunt #1: Find the Minion" },
-    { id: "3", title: "Hunt #2: The shark from Jaws" },
+    { id: "1", title: "Hunt #1: Find the Entrance Sign" },
+    { id: "2", title: "Hunt #2: Ride the Jurassic Park Ride" },
+    { id: "3", title: "Hunt #3: Take a Picture with a Mascot" },
 ];
 
-function ListScreen() {
+function ListScreen({ navigation }) {
+    // Function to render each hunt item
     function renderItem({ item }) {
         return (
             <TouchableOpacity
                 style={styles.huntItem}
-                onPress={() => alert(item.title)}
+                onPress={() =>
+                    navigation.navigate("HuntInfo", { huntTitle: item.title })
+                }
             >
-                <Text
-                    style={[
-                        styles.huntTitle,
-                        item.isTutorial && styles.tutorialText,
-                    ]}
-                >
-                    {item.title}
-                </Text>
+                <Text style={styles.huntTitle}>{item.title}</Text>
             </TouchableOpacity>
         );
     }
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Scavenger Hunt List</Text>
+            <Text style={styles.title}>Scavenger Hunts</Text>
             <FlatList
                 data={DATA}
                 renderItem={renderItem}
@@ -64,10 +60,6 @@ const styles = StyleSheet.create({
     },
     huntTitle: {
         fontSize: 18,
-    },
-    tutorialText: {
-        fontWeight: "bold",
-        color: "blue",
     },
 });
 
