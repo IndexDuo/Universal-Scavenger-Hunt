@@ -1,117 +1,52 @@
-import React, { useState, useEffect } from "react";
-import {
-    View,
-    Text,
-    FlatList,
-    StyleSheet,
-    TouchableOpacity,
-} from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import huntsData from "../data/huntsData.json"; // Import the hunts.json file
+import React from "react";
+import { createStackNavigator } from "@react-navigation/stack";
+import ListScreen from "../screens/ListScreen";
+import HuntInfoScreen from "../screens/HuntInfoScreen";
+import CameraScreen from "../screens/CameraScreen";
+import { useTheme } from "react-native-paper";
 
-function ListScreen({ navigation }) {
-    const [hunts, setHunts] = useState([]);
-    const [completedHunts, setCompletedHunts] = useState({});
+const Stack = createStackNavigator();
 
-    useEffect(() => {
-        // Load hunts from JSON file
-        setHunts(huntsData);
+function StackNavigator() {
+  const theme = useTheme();
 
-        // Load completed status from AsyncStorage
-        async function loadCompletedHunts() {
-            try {
-                const storedStatus =
-                    await AsyncStorage.getItem("completedHunts");
-                if (storedStatus) {
-                    setCompletedHunts(JSON.parse(storedStatus));
-                }
-            } catch (e) {
-                console.error("Failed to load completed hunts", e);
-            }
-        }
-        loadCompletedHunts();
-    }, []);
-
-    // Toggle completed status for a hunt
-    const toggleCompleted = async (huntId) => {
-        const newStatus = {
-            ...completedHunts,
-            [huntId]: !completedHunts[huntId],
-        };
-        setCompletedHunts(newStatus);
-        await AsyncStorage.setItem("completedHunts", JSON.stringify(newStatus));
-    };
-
-    // Render each hunt item
-    function renderItem({ item }) {
-        return (
-            <TouchableOpacity
-                style={[
-                    styles.huntItem,
-                    completedHunts[item.id] && styles.huntItemCompleted,
-                ]}
-                onPress={() =>
-                    navigation.navigate("HuntInfoScreen", {
-                        huntTitle: item.title,
-                        huntDescription: item.description,
-                        geolocation: item.geolocation,
-                        hintPhotoUri: item.hintPhotoUri,
-                        completed: completedHunts[item.id] || false,
-                        id: item.id, // Pass the ID to track completion status
-                    })
-                }
-            >
-                <Text style={styles.huntTitle}>
-                    {item.title}
-                    {completedHunts[item.id] && " ✅"}{" "}
-                    {/* Show checkmark if completed */}
-                </Text>
-                <Text style={styles.huntDescription}>{item.description}</Text>
-            </TouchableOpacity>
-        );
-    }
-
-    return (
-        <View style={styles.container}>
-            {/* <Text style={styles.title}>Scavenger Hunts</Text> */}
-            <FlatList
-                data={hunts}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id}
-            />
-        </View>
-    );
+  return (
+    <Stack.Navigator
+      initialRouteName="List"
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: "#0368D9",
+          height: 103,
+        },
+        headerTintColor: "#ffffff",
+        headerTitleStyle: {
+          fontFamily: "Avenir Next",
+          fontWeight: "700",
+          fontSize: 20,
+        },
+      }}
+    >
+      <Stack.Screen
+        name="List"
+        component={ListScreen}
+        options={{ title: "Scavenger Hunts" }}
+      />
+      <Stack.Screen
+        name="HuntInfoScreen"
+        component={HuntInfoScreen}
+        options={{
+          headerShown: false, // Hide the header for custom implementation
+        }}
+      />
+      <Stack.Screen
+        name="CameraScreen"
+        component={CameraScreen}
+        options={{
+          headerShown: false, // Hide the header for custom implementation
+        }}
+      />
+    </Stack.Navigator>
+  );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        paddingTop: 16,
-        paddingHorizontal: 16,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginBottom: 16,
-        textAlign: "center",
-    },
-    huntItem: {
-        padding: 16,
-        backgroundColor: "#f9f9f9",
-        borderBottomWidth: 1,
-        borderBottomColor: "#ddd",
-    },
-    huntItemCompleted: {
-        backgroundColor: "#d4edda", // Light green background for completed items
-    },
-    huntTitle: {
-        fontSize: 18,
-        fontWeight: "bold",
-    },
-    huntDescription: {
-        fontSize: 14,
-        color: "#666",
-    },
-});
-
-export default ListScreen;
+export default StackNavigator;

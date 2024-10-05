@@ -8,43 +8,46 @@ import { useTheme } from "react-native-paper";
 const Stack = createStackNavigator();
 
 function StackNavigator() {
-    const theme = useTheme();
+  const theme = useTheme();
 
-    return (
-        <Stack.Navigator
-            initialRouteName="List"
-            screenOptions={{
-                headerStyle: {
-                    backgroundColor: "#0368D9",
-                    height: 103,
-                },
-                headerTintColor: "#ffffff",
-                headerTitleStyle: {
-                    fontFamily: "Avenir Next",
-                    fontWeight: "700",
-                    fontSize: 20,
-                },
-            }}
-        >
-            <Stack.Screen
-                name="List"
-                component={ListScreen}
-                options={{ title: "Scavenger Hunts" }}
-            />
-            <Stack.Screen
-                name="HuntInfoScreen"
-                component={HuntInfoScreen}
-                options={{
-                    headerShown: false, // Hide the header for custom implementation
-                }}
-            />
-            <Stack.Screen
-                name="CameraScreen"
-                component={CameraScreen}
-                options={{ title: "Camera" }}
-            />
-        </Stack.Navigator>
-    );
+  return (
+    <Stack.Navigator
+      initialRouteName="List"
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: "#0368D9",
+          height: 103,
+        },
+        headerTintColor: "#ffffff",
+        headerTitleStyle: {
+          fontFamily: "Avenir Next",
+          fontWeight: "700",
+          fontSize: 20,
+        },
+      }}
+    >
+      <Stack.Screen
+        name="List"
+        component={ListScreen}
+        options={{ title: "Scavenger Hunts" }}
+      />
+      <Stack.Screen
+        name="HuntInfoScreen"
+        component={HuntInfoScreen}
+        options={{
+          headerShown: false, // Hide the header for custom implementation
+        }}
+      />
+      <Stack.Screen
+        name="CameraScreen"
+        component={CameraScreen}
+        options={{
+          headerShown: false, // Hide the default header
+          tabBarStyle: { display: "none" }, // Hide the bottom tab bar
+        }}
+      />
+    </Stack.Navigator>
+  );
 }
 
 export default StackNavigator;

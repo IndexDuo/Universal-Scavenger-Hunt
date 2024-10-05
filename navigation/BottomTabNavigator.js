@@ -5,6 +5,7 @@ import { useTheme, Provider as PaperProvider } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import StackNavigator from "./StackNavigator"; // Import the StackNavigator for List Screen
 import SouvenirScreen from "../screens/SouvenirScreen";
+import { getFocusedRouteNameFromRoute } from "@react-navigation/native"; // Import helper function
 
 // Create a custom theme for the bottom navigation and screens
 const CustomTheme = {
@@ -23,6 +24,17 @@ const Tab = createBottomTabNavigator();
 
 function BottomTabNavigator() {
     const theme = useTheme();
+
+    // Helper function to hide tab bar on certain screens
+    function getTabBarVisibility(route) {
+        const routeName =
+            getFocusedRouteNameFromRoute(route) ?? "ScavengerHuntList";
+        // If the current screen is CameraScreen, hide the tab bar
+        if (routeName === "CameraScreen") {
+            return { display: "none" };
+        }
+        return {};
+    }
 
     return (
         <PaperProvider theme={theme}>
@@ -51,7 +63,7 @@ function BottomTabNavigator() {
                     <Tab.Screen
                         name="ScavengerHuntList"
                         component={StackNavigator}
-                        options={{
+                        options={({ route }) => ({
                             headerShown: false,
                             tabBarLabel: "Hunts",
                             tabBarIcon: ({ color, size }) => (
@@ -61,7 +73,9 @@ function BottomTabNavigator() {
                                     size={size}
                                 />
                             ),
-                        }}
+                            // Use helper function to dynamically control tab bar visibility
+                            tabBarStyle: getTabBarVisibility(route),
+                        })}
                     />
                     <Tab.Screen
                         name="Souvenirs"

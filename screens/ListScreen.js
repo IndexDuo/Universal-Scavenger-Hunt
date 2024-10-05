@@ -84,9 +84,11 @@ function ListScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#EAEAEA", // Light grey background for the screen
+        backgroundColor: "#ffffff", // white
     },
     huntItem: {
+        width: "90%",
+        alignSelf: "center",
         marginVertical: 8,
         backgroundColor: "#ffffff", // White card background
         borderRadius: 8,
@@ -98,10 +100,10 @@ const styles = StyleSheet.create({
     huntTitle: {
         fontFamily: "Avenir Next", // Font family for titles
         fontSize: 20,
-        fontWeight: "700",
+        fontWeight: "600",
         lineHeight: 30,
         letterSpacing: -0.022,
-        color: "#0368D9", // Universal Blue for title text
+        color: "#000", // Universal Blue for title text
     },
     huntDescription: {
         fontFamily: "Avenir Next", // Font family for descriptions
