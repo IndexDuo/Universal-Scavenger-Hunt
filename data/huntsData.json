@@ -1,0 +1,47 @@
+[
+    {
+        "id": "1",
+        "title": "Find the Entrance Sign",
+        "description": "Find the entrance sign to the Wizarding World of Harry Potter.",
+        "photoUri": "",
+        "hintPhotoUri": "/images/hint-entrance-sign.jpg",
+        "geolocation": { "latitude": 28.47497, "longitude": -81.466492 },
+        "completed": false
+    },
+    {
+        "id": "2",
+        "title": "Catch the Simpsons' Phone Call",
+        "description": "Outside of the Kwik-E-Mart in Springfield, you can pick up the phone when it rings to hear Simpsons characters on the other line!",
+        "photoUri": "",
+        "hintPhotoUri": "path_to_photo/hint-simpsons-phone.jpg",
+        "geolocation": { "latitude": 28.479406, "longitude": -81.467825 },
+        "completed": false
+    },
+    {
+        "id": "3",
+        "title": "Take a Picture with a Mascot",
+        "description": "Find your favorite mascot and take a photo with them!",
+        "photoUri": "",
+        "hintPhotoUri": "path_to_photo/hint-mascot.jpg",
+        "geolocation": {},
+        "completed": false
+    },
+    {
+        "id": "4",
+        "title": "placeholder",
+        "description": "placeholder",
+        "photoUri": "",
+        "hintPhotoUri": "",
+        "geolocation": {},
+        "completed": false
+    },
+    {
+        "id": "5",
+        "title": "placeholder",
+        "description": "placeholder",
+        "photoUri": "",
+        "hintPhotoUri": "",
+        "geolocation": {},
+        "completed": false
+    }
+]
