@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import * as FileSystem from 'expo-file-system';
 
 function CameraScreen() {
     const cameraRef = useRef(null);
@@ -61,8 +62,33 @@ function CameraScreen() {
         setShowPreview(false); // Return to camera view
     }
 
-    function savePhoto() {
-        navigation.navigate("HuntInfoScreen", { photoUri, huntTitle });
+    async function savePhoto() {
+        try {
+            const formData = new FormData();
+            formData.append('photo', {
+                uri: photoUri,
+                name: 'photo.jpg',
+                type: 'image/jpeg',
+            });
+            formData.append('huntTitle', huntTitle);
+
+            const response = await fetch('http://localhost:3000/upload', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                navigation.navigate("HuntInfoScreen", { photoUri: data.photoUri, huntTitle });
+            } else {
+                console.error("Error saving photo:", data.error);
+            }
+        } catch (error) {
+            console.error("Error saving photo:", error);
+        }
     }
 
     return (
