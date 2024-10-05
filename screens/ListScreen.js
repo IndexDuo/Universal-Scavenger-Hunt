@@ -1,5 +1,4 @@
-// screens/ListScreen.js
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
     View,
     Text,
@@ -7,35 +6,76 @@ import {
     StyleSheet,
     TouchableOpacity,
 } from "react-native";
-
-const DATA = [
-    { id: "1", title: "Hunt #1: Find the Entrance Sign" },
-    { id: "2", title: "Hunt #2: Ride the Jurassic Park Ride" },
-    { id: "3", title: "Hunt #3: Take a Picture with a Mascot" },
-];
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import huntsData from "../data/huntsData.json"; // Import the hunts.json file
 
 function ListScreen({ navigation }) {
-    // Function to render each hunt item
+    const [hunts, setHunts] = useState([]);
+    const [completedHunts, setCompletedHunts] = useState({});
+
+    useEffect(() => {
+        // Load hunts from JSON file
+        setHunts(huntsData);
+
+        // Load completed status from AsyncStorage
+        async function loadCompletedHunts() {
+            try {
+                const storedStatus =
+                    await AsyncStorage.getItem("completedHunts");
+                if (storedStatus) {
+                    setCompletedHunts(JSON.parse(storedStatus));
+                }
+            } catch (e) {
+                console.error("Failed to load completed hunts", e);
+            }
+        }
+        loadCompletedHunts();
+    }, []);
+
+    // Toggle completed status for a hunt
+    const toggleCompleted = async (huntId) => {
+        const newStatus = {
+            ...completedHunts,
+            [huntId]: !completedHunts[huntId],
+        };
+        setCompletedHunts(newStatus);
+        await AsyncStorage.setItem("completedHunts", JSON.stringify(newStatus));
+    };
+
+    // Render each hunt item
     function renderItem({ item }) {
         return (
             <TouchableOpacity
-                style={styles.huntItem}
+                style={[
+                    styles.huntItem,
+                    completedHunts[item.id] && styles.huntItemCompleted,
+                ]}
                 onPress={() =>
                     navigation.navigate("HuntInfoScreen", {
                         huntTitle: item.title,
+                        huntDescription: item.description,
+                        geolocation: item.geolocation,
+                        hintPhotoUri: item.hintPhotoUri,
+                        completed: completedHunts[item.id] || false,
+                        id: item.id, // Pass the ID to track completion status
                     })
                 }
             >
-                <Text style={styles.huntTitle}>{item.title}</Text>
+                <Text style={styles.huntTitle}>
+                    {item.title}
+                    {completedHunts[item.id] && " ✅"}{" "}
+                    {/* Show checkmark if completed */}
+                </Text>
+                <Text style={styles.huntDescription}>{item.description}</Text>
             </TouchableOpacity>
         );
     }
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Scavenger Hunts</Text>
+            {/* <Text style={styles.title}>Scavenger Hunts</Text> */}
             <FlatList
-                data={DATA}
+                data={hunts}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
             />
@@ -53,6 +93,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: "bold",
         marginBottom: 16,
+        textAlign: "center",
     },
     huntItem: {
         padding: 16,
@@ -60,8 +101,16 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: "#ddd",
     },
+    huntItemCompleted: {
+        backgroundColor: "#d4edda", // Light green background for completed items
+    },
     huntTitle: {
         fontSize: 18,
+        fontWeight: "bold",
+    },
+    huntDescription: {
+        fontSize: 14,
+        color: "#666",
     },
 });
 
