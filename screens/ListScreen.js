@@ -6,12 +6,8 @@ import {
     StyleSheet,
     TouchableOpacity,
 } from "react-native";
-
-const DATA = [
-    { id: "1", title: "Hunt #1: Find the Entrance Sign" },
-    { id: "2", title: "Hunt #2: Ride the Jurassic Park Ride" },
-    { id: "3", title: "Hunt #3: Take a Picture with a Mascot" },
-];
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import huntsData from "../data/huntsData.json";
 
 function ListScreen({ navigation }) {
     const [hunts, setHunts] = useState([]);
@@ -74,7 +70,7 @@ function ListScreen({ navigation }) {
         <View style={styles.container}>
             {/* <Text style={styles.title}>Scavenger Hunts</Text> */}
             <FlatList
-                data={DATA}
+                data={hunts}
                 renderItem={renderItem}
                 keyExtractor={(item) => item.id}
             />

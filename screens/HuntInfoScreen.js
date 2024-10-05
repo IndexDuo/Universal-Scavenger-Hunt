@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
-import HUNT_DATA from "../components/HuntList";
+import huntsData from "../data/huntsData.json";
+import imagePaths from "../data/imagePaths";
 
 function HuntInfoScreen({ route, navigation }) {
     const { huntTitle, photoUri: newPhotoUri } = route.params || {};
@@ -33,6 +34,9 @@ function HuntInfoScreen({ route, navigation }) {
         await AsyncStorage.setItem(`${huntTitle}-photo`, uri);
     }
 
+    const hunt = huntsData.find((hunt) => hunt.title === huntTitle);
+    const hintPhotoUri = hunt ? hunt.hintPhotoUri : null;
+
     return (
         <View style={styles.container}>
             {/* Display the saved photo or a placeholder box */}
@@ -40,16 +44,21 @@ function HuntInfoScreen({ route, navigation }) {
                 <Image source={{ uri: photoUri }} style={styles.photo} />
             ) : (
                 <View style={styles.placeholder}>
-                    <Text style={styles.placeholderText}>
-                        No photo taken yet
-                    </Text>
+                    {hintPhotoUri ? (
+                        <Image
+                            source={imagePaths[hintPhotoUri.split('/').pop()]}
+                            style={styles.photo}
+                        />
+                    ) : (
+                        <Text style={styles.placeholderText}>No photo available</Text>
+                    )}
                 </View>
             )}
 
             {/* Hunt title and description */}
             <Text style={styles.title}>{huntTitle}</Text>
             <Text style={styles.description}>
-                {HUNT_DATA.find((hunt) => hunt.title === huntTitle).description}
+                {hunt ? hunt.description : ""}
             </Text>
 
             {/* Floating Action Button (FAB) for taking a new photo */}
