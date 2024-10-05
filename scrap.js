@@ -1,94 +1,84 @@
-// App.js (or CameraComponent.js if you prefer)
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     View,
     Text,
-    Button,
+    FlatList,
     StyleSheet,
     TouchableOpacity,
-    Image,
 } from "react-native";
-import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import huntsData from "../data/huntsData.json"; // Import the hunts.json file
 
-export default function App() {
-    const [cameraType, setCameraType] = useState("back"); // Use the new CameraType enum
-    const [permission, requestPermission] = useCameraPermissions(); // Permissions hook for camera
-    const [photoUri, setPhotoUri] = useState(null); // Store the URI of the captured photo
-    const [isCameraReady, setIsCameraReady] = useState(false); // State to handle camera readiness
+function ListScreen({ navigation }) {
+    const [hunts, setHunts] = useState([]);
+    const [completedHunts, setCompletedHunts] = useState({});
 
-    // Check if permissions are still loading
-    if (!permission) {
-        return (
-            <View style={styles.container}>
-                <Text>Loading permissions...</Text>
-            </View>
-        );
-    }
+    useEffect(() => {
+        // Load hunts from JSON file
+        setHunts(huntsData);
 
-    // Check if permissions are granted
-    if (!permission.granted) {
-        return (
-            <View style={styles.container}>
-                <Text style={styles.message}>
-                    We need your permission to show the camera
-                </Text>
-                <Button onPress={requestPermission} title="Grant Permission" />
-            </View>
-        );
-    }
-
-    // Function to toggle between front and back camera
-    function toggleCameraType() {
-        setCameraType((current) =>
-            current === CameraType.Back ? CameraType.Front : CameraType.Back
-        );
-    }
-
-    // Function to capture the photo
-    async function takePhoto() {
-        if (isCameraReady) {
+        // Load completed status from AsyncStorage
+        async function loadCompletedHunts() {
             try {
-                // Capture a photo using the CameraView API (simulating capture)
-                const photo = await CameraView.current.CameraPictureOptions();
-                setPhotoUri(photo.uri);
-                console.log("Photo URI:", photo.uri);
-            } catch (error) {
-                console.error("Error taking photo:", error);
+                const storedStatus =
+                    await AsyncStorage.getItem("completedHunts");
+                if (storedStatus) {
+                    setCompletedHunts(JSON.parse(storedStatus));
+                }
+            } catch (e) {
+                console.error("Failed to load completed hunts", e);
             }
         }
+        loadCompletedHunts();
+    }, []);
+
+    // Toggle completed status for a hunt
+    const toggleCompleted = async (huntId) => {
+        const newStatus = {
+            ...completedHunts,
+            [huntId]: !completedHunts[huntId],
+        };
+        setCompletedHunts(newStatus);
+        await AsyncStorage.setItem("completedHunts", JSON.stringify(newStatus));
+    };
+
+    // Render each hunt item
+    function renderItem({ item }) {
+        return (
+            <TouchableOpacity
+                style={[
+                    styles.huntItem,
+                    completedHunts[item.id] && styles.huntItemCompleted,
+                ]}
+                onPress={() =>
+                    navigation.navigate("HuntInfoScreen", {
+                        huntTitle: item.title,
+                        huntDescription: item.description,
+                        geolocation: item.geolocation,
+                        hintPhotoUri: item.hintPhotoUri,
+                        completed: completedHunts[item.id] || false,
+                        id: item.id, // Pass the ID to track completion status
+                    })
+                }
+            >
+                <Text style={styles.huntTitle}>
+                    {item.title}
+                    {completedHunts[item.id] && " ✅"}{" "}
+                    {/* Show checkmark if completed */}
+                </Text>
+                <Text style={styles.huntDescription}>{item.description}</Text>
+            </TouchableOpacity>
+        );
     }
 
     return (
         <View style={styles.container}>
-            {/* Camera View */}
-            <CameraView
-                style={styles.camera}
-                type={cameraType}
-                onCameraReady={() => setIsCameraReady(true)} // Mark the camera as ready
-            >
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={toggleCameraType}
-                    >
-                        <Text style={styles.text}>Flip Camera</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={takePhoto}>
-                        <Text style={styles.text}>Take Photo</Text>
-                    </TouchableOpacity>
-                </View>
-            </CameraView>
-
-            {/* Display the captured photo */}
-            {photoUri && (
-                <View style={styles.previewContainer}>
-                    <Text style={styles.previewText}>Captured Image:</Text>
-                    <Image
-                        source={{ uri: photoUri }}
-                        style={styles.previewImage}
-                    />
-                </View>
-            )}
+            {/* <Text style={styles.title}>Scavenger Hunts</Text> */}
+            <FlatList
+                data={hunts}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id}
+            />
         </View>
     );
 }
@@ -96,46 +86,32 @@ export default function App() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "center",
-        backgroundColor: "black",
+        paddingTop: 16,
+        paddingHorizontal: 16,
     },
-    camera: {
-        flex: 1,
-        aspectRatio: 3 / 4, // Adjust the aspect ratio to fit your screen
-    },
-    buttonContainer: {
-        position: "absolute",
-        bottom: 20,
-        width: "100%",
-        flexDirection: "row",
-        justifyContent: "space-evenly",
-        alignItems: "center",
-    },
-    button: {
-        backgroundColor: "white",
-        padding: 10,
-        borderRadius: 5,
-    },
-    text: {
-        fontSize: 16,
+    title: {
+        fontSize: 24,
         fontWeight: "bold",
-        color: "black",
+        marginBottom: 16,
+        textAlign: "center",
     },
-    previewContainer: {
-        position: "absolute",
-        bottom: 100,
-        left: 10,
-        right: 10,
-        alignItems: "center",
+    huntItem: {
+        padding: 16,
+        backgroundColor: "#f9f9f9",
+        borderBottomWidth: 1,
+        borderBottomColor: "#ddd",
     },
-    previewText: {
-        color: "white",
+    huntItemCompleted: {
+        backgroundColor: "#d4edda", // Light green background for completed items
+    },
+    huntTitle: {
         fontSize: 18,
-        marginBottom: 10,
+        fontWeight: "bold",
     },
-    previewImage: {
-        width: 200,
-        height: 300,
-        borderRadius: 10,
+    huntDescription: {
+        fontSize: 14,
+        color: "#666",
     },
 });
+
+export default ListScreen;
