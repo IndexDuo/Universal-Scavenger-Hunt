@@ -1,6 +1,7 @@
 import React from "react";
 import { Provider as PaperProvider, DefaultTheme } from "react-native-paper";
 import BottomTabNavigator from "./navigation/BottomTabNavigator";
+import ResponsiveWrapper from "./components/ResponsiveWrapper";
 
 // Define a custom theme for React Native Paper
 const CustomTheme = {
@@ -26,7 +27,9 @@ const CustomTheme = {
 function App() {
     return (
         <PaperProvider theme={CustomTheme}>
-            <BottomTabNavigator />
+            <ResponsiveWrapper>
+                <BottomTabNavigator />
+            </ResponsiveWrapper>
         </PaperProvider>
     );
 }
