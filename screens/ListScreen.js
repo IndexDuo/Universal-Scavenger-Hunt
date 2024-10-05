@@ -16,7 +16,7 @@ function ListScreen({ navigation }) {
             <TouchableOpacity
                 style={styles.huntItem}
                 onPress={() =>
-                    navigation.navigate("HuntInfo", { huntTitle: item.title })
+                    navigation.navigate("HuntInfoScreen", { huntTitle: item.title })
                 }
             >
                 <Text style={styles.huntTitle}>{item.title}</Text>

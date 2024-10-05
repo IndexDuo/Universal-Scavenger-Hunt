@@ -23,11 +23,11 @@ function HuntInfoScreen({ route, navigation }) {
 
     // Update photoUri if a new photo is taken
     useEffect(() => {
-        if (newPhotoUri) {
-            setPhotoUri(newPhotoUri);
-            savePhoto(newPhotoUri); // Save the new photo to AsyncStorage
+        if (photoUri) {
+            setPhotoUri(photoUri);
+            savePhoto(photoUri); // Save the new photo to AsyncStorage
         }
-    }, [newPhotoUri]);
+    }, [photoUri]);
 
     async function savePhoto(uri) {
         await AsyncStorage.setItem(`${huntTitle}-photo`, uri);
