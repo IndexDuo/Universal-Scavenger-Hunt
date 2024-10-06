@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 16,
-    textAlign: "left", // Left-aligned text
+    textAlign: "center", // Left-aligned text
     marginBottom: 20,
     color: "#666",
   },
