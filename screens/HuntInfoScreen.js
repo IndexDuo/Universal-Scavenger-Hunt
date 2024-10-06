@@ -1,32 +1,30 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
-
-// Get the screen dimensions
-const screenHeight = Dimensions.get("window").height;
-const screenWidth = Dimensions.get("window").width;
+import huntsData from "../data/huntsData.json";
 
 function HuntInfoScreen({ route, navigation }) {
-  const { huntTitle, photoUri: newPhotoUri } = route.params || {};
+  const { huntId, photoUri: newPhotoUri } = route.params || {};
   const [photoUri, setPhotoUri] = useState(null);
+  const [hunt, setHunt] = useState(null);
+
+  useEffect(() => {
+    const selectedHunt = huntsData.find((hunt) => hunt.id === huntId);
+    setHunt(selectedHunt);
+  }, [huntId]);
 
   useEffect(() => {
     async function loadPhoto() {
-      const storedPhotoUri = await AsyncStorage.getItem(`${huntTitle}-photo`);
+      const storedPhotoUri = await AsyncStorage.getItem(`${hunt?.title}-photo`);
       if (storedPhotoUri) {
         setPhotoUri(storedPhotoUri);
       }
     }
-    loadPhoto();
-  }, []);
+    if (hunt) {
+      loadPhoto();
+    }
+  }, [hunt]);
 
   useEffect(() => {
     if (newPhotoUri) {
@@ -36,7 +34,7 @@ function HuntInfoScreen({ route, navigation }) {
   }, [newPhotoUri]);
 
   async function savePhoto(uri) {
-    await AsyncStorage.setItem(`${huntTitle}-photo`, uri);
+    await AsyncStorage.setItem(`${hunt?.title}-photo`, uri);
   }
 
   return (
@@ -62,16 +60,16 @@ function HuntInfoScreen({ route, navigation }) {
 
       {/* Hunt Title and Description */}
       <View style={styles.textContainer}>
-        <Text style={styles.title}>{huntTitle}</Text>
-        <Text style={styles.description}>
-          Take a photo to complete this scavenger hunt and save your memory!
-        </Text>
+        <Text style={styles.title}>{hunt?.title}</Text>
+        <Text style={styles.description}>{hunt?.description}</Text>
       </View>
 
       {/* Floating Action Button (FAB) for taking a new photo */}
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => navigation.navigate("CameraScreen", { huntTitle })}
+        onPress={() =>
+          navigation.navigate("CameraScreen", { huntTitle: hunt?.title })
+        }
       >
         <Ionicons name="camera" size={30} color="white" />
         <Text style={styles.fabText}>Take Photo</Text>
@@ -83,87 +81,61 @@ function HuntInfoScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffffff", // Updated to white background
+    padding: 16,
   },
   customHeader: {
-    position: "absolute",
-    top: 50,
-    left: 20,
-    zIndex: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
   },
   backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#ffffff",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
+    padding: 10,
   },
   photo: {
-    width: screenWidth,
-    height: screenHeight * 0.4, // 40% of the screen height
-    marginTop: 0,
-    marginLeft: 0,
-    marginRight: 0,
-    borderRadius: 0, // No border radius for the top image
+    width: "100%",
+    height: 300,
+    borderRadius: 10,
+    marginBottom: 20,
   },
   placeholder: {
-    width: screenWidth,
-    height: screenHeight * 0.4,
-    marginTop: 0,
-    marginLeft: 0,
-    marginRight: 0,
-    borderRadius: 0,
-    backgroundColor: "#e0e0e0",
+    width: "100%",
+    height: 300,
+    borderRadius: 10,
+    backgroundColor: "#EAEAEA",
     justifyContent: "center",
     alignItems: "center",
+    marginBottom: 20,
   },
   placeholderText: {
-    fontSize: 18,
-    color: "#888",
+    color: "#888888",
+    fontSize: 16,
   },
   textContainer: {
-    paddingHorizontal: 20, // Padding for the text content below the image
-    marginTop: 20, // Space between the image and text container
+    marginBottom: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
-    textAlign: "left", // Left-aligned text
   },
   description: {
     fontSize: 16,
-    textAlign: "center", // Left-aligned text
-    marginBottom: 20,
-    color: "#666",
+    color: "#666666",
   },
   fab: {
     position: "absolute",
-    bottom: 30,
-    left: screenWidth / 2 - 75, // Centered button (adjust width / 2 - button width / 2)
+    bottom: 20,
+    right: 20,
+    backgroundColor: "#0368D9",
+    borderRadius: 50,
+    padding: 15,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#0368D9", // Universal Blue for the button
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 30,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
   },
   fabText: {
-    marginLeft: 10,
-    fontSize: 18,
     color: "white",
-    fontWeight: "bold",
+    marginLeft: 10,
+    fontSize: 16,
   },
 });
 
